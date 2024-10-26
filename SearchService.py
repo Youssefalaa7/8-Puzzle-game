@@ -85,8 +85,14 @@ def bfs(state: int, goal):
         print("Path Cost:   ", level[goal])
         print("Nodes expanded", len(explored))
         print(get_path(parent , goal))
+        return True , max_depth , level[goal] , len(explored) , get_path(parent , goal)
     else:
         print("Path Not found")
+        return False,max_depth,None,len(explored),None
+
+
+
+
 def dfs(state: int, goal:int ):
     frontier = [state]
     level = dict()
@@ -122,8 +128,16 @@ def dfs(state: int, goal:int ):
         print("Path Cost:   ", level[goal])
         print("Nodes expanded", len(explored))
         print(get_path(parent , goal))
+        return True , max_depth , level[goal] , len(explored) , get_path(parent, goal)
     else:
-        print("Path Not found")
+         print("Path Not found")
+         return False , max_depth , None , len(explored) , None
+
+
+
+
+
+
 def dfs_with_limit(init_state:int  , goal:int, limit:int):
     frontier = [init_state]
     explored = set()
@@ -158,37 +172,45 @@ def dfs_with_limit(init_state:int  , goal:int, limit:int):
 def ids(state: int, goal: int):
     previous_explored_nodes = 0
     depth_limit = 0
+    explored = 0
+
 
     while True:
-        result, level, explored, solution, parents = dfs_with_limit(state, goal, depth_limit)
-
+        result, level, iterative_explored, solution, parents = dfs_with_limit(state, goal, depth_limit)
+        explored+=iterative_explored
         if result:
             print("Goal Found")
             print("Path to Goal:", get_path(parents, goal))
             print("Depth Limit Reached:", depth_limit)
             print("Path Cost:", level[goal])
             print("Total Nodes Explored:", explored)
-            break
-        elif explored == previous_explored_nodes:
+            return True,depth_limit,level[goal],explored,get_path(parents , goal)
+        elif iterative_explored == previous_explored_nodes:
             print("Goal Not Found within current limits")
-            break
+            return False, depth_limit,explored ,  None, None
         else:
-            previous_explored_nodes = explored
+            previous_explored_nodes = iterative_explored
             depth_limit += 1
 
 
 
-start_time = time.time()
-bfs(862405173 , 12345678)
-end_time = time.time()
-exec_time = end_time - start_time
-print("exec_time  " , exec_time , "Seconds")
 
-start_time = time.time()
-ids(862405173, 12345678)
-end_time = time.time()
-exec_time = end_time - start_time
-print("exec_time  " , exec_time , "Seconds")
+
+
+# start_time = time.time()
+#
+# end_time = time.time()
+# exec_time = end_time - start_time
+# print("exec_time  " , exec_time , "Seconds")
+# print("##############################")
+# print(result)
+# print(max_depth)
+# print(cost)
+# print(explored_nodes)
+# print(path)
+# print(tim)
+
+
 
 
 
@@ -219,3 +241,5 @@ print("exec_time  " , exec_time , "Seconds")
 #                 parent[child] = current_state
 #     f.write("\n#######################\n")
 #     return False, level , len(explored) ,None , None
+
+idc(213456780,12345678)

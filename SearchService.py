@@ -242,4 +242,3 @@ def ids(state: int, goal: int):
 #     f.write("\n#######################\n")
 #     return False, level , len(explored) ,None , None
 
-idc(213456780,12345678)

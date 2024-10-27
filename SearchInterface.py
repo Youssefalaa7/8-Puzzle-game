@@ -27,18 +27,6 @@ def ids(state_init:int):
 
 
 
-result,max_depth,cost,explored_nodes,path,exec = ids(213456780)
-print(result)
-print(max_depth)
-print(cost)
-print(explored_nodes)
-print(path)
-print(exec)
-
-
-
-
-
 
 # result:boolean  if solvable or not
 # cost :int depth of the goal

@@ -48,13 +48,13 @@ def heuristic_euclidean_distance(state,goal):
 
 
 
-def a_star_algorithm(initial_state,goal_state,heuristic_type):
+def a_star_algorithm(initial_state,goal,heuristic_type):
     start_time=time.time()
     frontier=[]
     heapq.heapify(frontier)
     explored={}
     initial_cost=0
-    initial_heuristic=heuristic(initial_state,goal_state,heuristic_type)
+    initial_heuristic=heuristic(initial_state,goal,heuristic_type)
     initial_total_cost=initial_cost+initial_heuristic
     initial_node=Node(initial_state,None,None,initial_cost,initial_heuristic,initial_total_cost)
     heapq.heappush(frontier,(initial_total_cost,initial_node))
@@ -72,7 +72,7 @@ def a_star_algorithm(initial_state,goal_state,heuristic_type):
             print("Nodes Expanded:",len(explored)-1)
             print("Search Depth:",len(path))
             print("Running Time:",time.time()-start_time)
-            return
+            return True,len(path),len(path),len(explored)-1,path,time.time()-start_time
         moves={"Left":-1,"Right":1,"Down":3,"Up":-3}
         for move,step in moves.items():
             if (curr.state.index(0)%3!=0 and move=="Left") or (curr.state.index(0)%3!=2 and move=="Right") or (curr.state.index(0)//3!=2 and move=="Down") or (curr.state.index(0)//3!=0 and move=="Up"):

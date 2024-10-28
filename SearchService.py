@@ -1,5 +1,5 @@
 import time
-f = open("States.txt" , "w")
+
 
 
 def get_children(state: int):
@@ -11,7 +11,7 @@ def get_children(state: int):
     except:
         state_str = '0' + state_str
         zero_p = 0
-    directions = [1, -1, 3, -3]
+    directions = [1,  3, -3 , -1]
     for i in directions:
         place = zero_p + i
         if 0 <= place < len(state_str) and ((abs(i) == 3) or ((i==1) and (zero_p% 3 != 2)) or((i==-1) and(zero_p % 3 != 0))):
@@ -26,8 +26,8 @@ def swap(input: str, first, second):
 def get_path(parents:dict , goal : int):
     direction = list()
     x = goal
-    while x !=  -1:
-        y = parents[x]
+    y = parents[x]
+    while y != -1:
         child_place = find_zero(str(x))
         parent_place = find_zero(str(y))
         if child_place == parent_place+1:
@@ -39,6 +39,7 @@ def get_path(parents:dict , goal : int):
         elif child_place == parent_place -3:
             direction.append("up")
         x = y
+        y = parents[y]
 
     direction.reverse()
     return direction
@@ -61,8 +62,6 @@ def bfs(state: int, goal):
     flag = False
     while frontier:
         current_state = frontier.pop(0)
-        f.write(str(current_state))
-        f.write("\n")
 
 
         explored.add(current_state)
@@ -104,8 +103,6 @@ def dfs(state: int, goal:int ):
     flag = False
     while frontier:
         current_state = frontier.pop()
-        f.write(str(current_state))
-        f.write("\n")
 
 
         explored.add(current_state)
@@ -150,8 +147,7 @@ def dfs_with_limit(init_state:int  , goal:int, limit:int):
     while frontier:
         current_state = frontier.pop()
         explored.add(current_state)
-        f.write(str(current_state))
-        f.write("\n")
+
         if current_state == goal:
             flag =True
             continue
@@ -167,7 +163,7 @@ def dfs_with_limit(init_state:int  , goal:int, limit:int):
                     frontier.append(child)
                     parent[child] = current_state
                     level[child] = x
-    f.write("\n#######################\n")
+
     return flag , level , len(explored) ,current_state , parent
 def ids(state: int, goal: int):
     previous_explored_nodes = 0
@@ -242,4 +238,4 @@ def ids(state: int, goal: int):
 #     f.write("\n#######################\n")
 #     return False, level , len(explored) ,None , None
 
-idc(213456780,12345678)
+ids(312045678,12345678)

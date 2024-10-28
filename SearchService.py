@@ -26,8 +26,8 @@ def swap(input: str, first, second):
 def get_path(parents:dict , goal : int):
     direction = list()
     x = goal
-    while x !=  -1:
-        y = parents[x]
+    y = parents[x]
+    while y != -1:
         child_place = find_zero(str(x))
         parent_place = find_zero(str(y))
         if child_place == parent_place+1:
@@ -39,6 +39,7 @@ def get_path(parents:dict , goal : int):
         elif child_place == parent_place -3:
             direction.append("up")
         x = y
+        y = parents[y]
 
     direction.reverse()
     return direction
@@ -242,4 +243,4 @@ def ids(state: int, goal: int):
 #     f.write("\n#######################\n")
 #     return False, level , len(explored) ,None , None
 
-idc(213456780,12345678)
+ids(312045678,12345678)

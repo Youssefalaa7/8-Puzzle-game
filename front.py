@@ -14,6 +14,8 @@ class PuzzleSolver(QWidget):
         self.setGeometry(100, 100, 600, 500)
         self.initUI()
         self.goal = (0, 1, 2, 3, 4, 5, 6, 7, 8)  # Set the goal state as a tuple
+        self.current_state_index = 0  # Index to track current state in solution path
+        self.solution_states = []  # List to store the states for solution navigation
 
     def initUI(self):
         layout = QVBoxLayout()
@@ -40,6 +42,16 @@ class PuzzleSolver(QWidget):
                 row.append(button)
             self.grid_buttons.append(row)
         layout.addLayout(self.grid_layout)
+
+        # Navigation buttons layout
+        nav_layout = QHBoxLayout()
+        self.left_button = QPushButton("<-", self)
+        self.left_button.clicked.connect(self.show_previous_state)
+        self.right_button = QPushButton("->", self)
+        self.right_button.clicked.connect(self.show_next_state)
+        nav_layout.addWidget(self.left_button)
+        nav_layout.addWidget(self.right_button)
+        layout.addLayout(nav_layout)
 
         # Search buttons layout
         button_layout = QHBoxLayout()
@@ -93,6 +105,9 @@ class PuzzleSolver(QWidget):
                 value = state[i * 3 + j]
                 self.grid_buttons[i][j].setText("" if value == 0 else str(value))
 
+        # Refresh the UI
+        QApplication.processEvents()
+
     def run_dfs(self):
         self.run_search(si.dfs)
 
@@ -100,11 +115,9 @@ class PuzzleSolver(QWidget):
         self.run_search(si.bfs)
 
     def run_ids(self):
-        # Prompt for maximum depth input for IDS
         self.run_search(si.ids)
 
     def run_a_star(self):
-        # Prompt for heuristic type for A*
         heuristic_type, ok = QInputDialog.getInt(
             self, "Select Heuristic Type", 
             "Enter 1 for Manhattan or 2 for Euclidean:", 
@@ -121,44 +134,72 @@ class PuzzleSolver(QWidget):
         initial_state = list(self.initial_state)
         goal_state = list(self.goal)
 
-        # Convert the initial state tuple to an integer
         initial_state_int = int(''.join(map(str, initial_state)))
         goal_state_int = int(''.join(map(str, goal_state)))
 
         try:
-            # Call the provided search function
-            if search_func==si.ids:
+            if search_func == si.ids:
                 result = search_func(initial_state_int)
             elif 'heuristic_type' in kwargs:
                 result = search_func(initial_state, goal_state, kwargs['heuristic_type'])
             else:
                 result = search_func(initial_state_int)
 
-            # Ensure result is not None
             if result is None:
                 QMessageBox.warning(self, "Warning", "No solution found.")
                 return
 
-            # Unpack result
             success, max_depth, cost, expanded_nodes, path, exec_time = result
+
+            if success:
+                self.result_label.setText(
+                    f"Path: {path}\n"
+                    f"Path Cost: {cost}\n"
+                    f"Max Depth: {max_depth}\n"
+                    f"Nodes Expanded: {expanded_nodes}\n"
+                    f"Execution Time: {exec_time:.4f} seconds"
+                )
+                # Create the solution states from the path
+                self.generate_solution_states(initial_state, path)
+                self.current_state_index = 0
+                self.update_grid(self.solution_states[self.current_state_index])
+            else:
+                self.result_label.setText("No solution found.")
 
         except Exception as e:
             QMessageBox.critical(self, "Error", f"An error occurred during search: {e}")
-            return
 
-        # Display results
-        if not success:
-            self.result_label.setText("No solution found.")
-        else:
-            self.result_label.setText(
-                f"Path: {path}\n"
-                f"Path Cost: {cost}\n"
-                f"Max Depth: {max_depth}\n"
-                f"Nodes Expanded: {expanded_nodes}\n"
-                f"Execution Time: {exec_time:.4f} seconds"
-            )
-            # Update grid to show the goal state
-            self.update_grid(list(goal_state))
+    def generate_solution_states(self, initial_state, path):
+        """Generates the list of solution states based on the path."""
+        self.solution_states = [list(initial_state)]
+        current_state = list(initial_state)
+
+        for move in path:
+            zero_index = current_state.index(0)
+            if move.lower() == "left":
+                swap_index = zero_index - 1
+            elif move.lower()== "right" :
+                swap_index = zero_index + 1
+            elif move.lower() == "up" :
+                swap_index = zero_index  - 3
+            elif move.lower() == "down":
+                swap_index = zero_index + 3
+            current_state[zero_index], current_state[swap_index] = current_state[swap_index], current_state[zero_index]
+            self.solution_states.append(list(current_state))
+
+    def show_previous_state(self):
+        """Show the previous state in the solution path."""
+        if self.current_state_index > 0:
+            self.current_state_index -= 1
+            self.update_grid(self.solution_states[self.current_state_index])
+
+    def show_next_state(self):
+        """Show the next state in the solution path."""
+        if self.current_state_index < len(self.solution_states) - 1:
+            print(self.current_state_index)
+            print(self.solution_states)
+            self.current_state_index += 1
+            self.update_grid(self.solution_states[self.current_state_index])
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

@@ -46,9 +46,20 @@ class PuzzleSolver(QWidget):
         # Navigation buttons layout
         nav_layout = QHBoxLayout()
         self.left_button = QPushButton("<-", self)
-        self.left_button.clicked.connect(self.show_previous_state)
         self.right_button = QPushButton("->", self)
+
+        # Enable auto-repeat for continuous execution
+        self.left_button.setAutoRepeat(True)
+        self.left_button.setAutoRepeatDelay(300)  # Initial delay before auto-repeat starts (in ms)
+        self.left_button.setAutoRepeatInterval(100)  # Interval between repeats (in ms)
+
+        self.right_button.setAutoRepeat(True)
+        self.right_button.setAutoRepeatDelay(300)  # Initial delay before auto-repeat starts (in ms)
+        self.right_button.setAutoRepeatInterval(100)  # Interval between repeats (in ms)
+
+        self.left_button.clicked.connect(self.show_previous_state)
         self.right_button.clicked.connect(self.show_next_state)
+
         nav_layout.addWidget(self.left_button)
         nav_layout.addWidget(self.right_button)
         layout.addLayout(nav_layout)

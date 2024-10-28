@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout,
-                             QPushButton, QLabel, QLineEdit, QFileDialog, QMessageBox, 
-                             QGridLayout, QInputDialog)
+                             QPushButton, QLineEdit, QFileDialog, QMessageBox, 
+                             QGridLayout, QInputDialog, QTextEdit)
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 import SearchInterface as si  # Assuming this wraps SearchService's methods
@@ -71,8 +71,9 @@ class PuzzleSolver(QWidget):
         button_layout.addWidget(a_star_button)
         layout.addLayout(button_layout)
 
-        # Solution details layout
-        self.result_label = QLabel(self)
+        # Solution details layout (QTextEdit for longer paths)
+        self.result_label = QTextEdit(self)
+        self.result_label.setReadOnly(True)
         layout.addWidget(self.result_label)
 
         self.setLayout(layout)
@@ -152,7 +153,7 @@ class PuzzleSolver(QWidget):
             success, max_depth, cost, expanded_nodes, path, exec_time = result
 
             if success:
-                self.result_label.setText(
+                self.result_label.setPlainText(
                     f"Path: {path}\n"
                     f"Path Cost: {cost}\n"
                     f"Max Depth: {max_depth}\n"
@@ -164,7 +165,7 @@ class PuzzleSolver(QWidget):
                 self.current_state_index = 0
                 self.update_grid(self.solution_states[self.current_state_index])
             else:
-                self.result_label.setText("No solution found.")
+                self.result_label.setPlainText("No solution found.")
 
         except Exception as e:
             QMessageBox.critical(self, "Error", f"An error occurred during search: {e}")
@@ -178,10 +179,10 @@ class PuzzleSolver(QWidget):
             zero_index = current_state.index(0)
             if move.lower() == "left":
                 swap_index = zero_index - 1
-            elif move.lower()== "right" :
+            elif move.lower() == "right":
                 swap_index = zero_index + 1
-            elif move.lower() == "up" :
-                swap_index = zero_index  - 3
+            elif move.lower() == "up":
+                swap_index = zero_index - 3
             elif move.lower() == "down":
                 swap_index = zero_index + 3
             current_state[zero_index], current_state[swap_index] = current_state[swap_index], current_state[zero_index]
@@ -196,8 +197,6 @@ class PuzzleSolver(QWidget):
     def show_next_state(self):
         """Show the next state in the solution path."""
         if self.current_state_index < len(self.solution_states) - 1:
-            print(self.current_state_index)
-            print(self.solution_states)
             self.current_state_index += 1
             self.update_grid(self.solution_states[self.current_state_index])
 
